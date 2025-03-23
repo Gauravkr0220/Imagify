@@ -1,13 +1,24 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { assets } from "../assets/assets";
 import {motion} from 'framer-motion'
+import { AppContext } from "../context/AppContext";
 const Result = () => {
   const [image, setImage] = useState(assets.sample_img_1);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
   const[input, setInput]=useState('')
+  const{generateImage}=useContext(AppContext)
   const onSubmitHandler=async(e)=>{
-
+      e.preventDefault()
+    setLoading(true)
+    if(input){
+      const image=await generateImage(input)
+      if(image){
+        setIsImageLoaded(true)
+        setImage(image)
+      }
+    }
+    setLoading(false);
   }
   return (
     <motion.form 
@@ -28,7 +39,7 @@ const Result = () => {
       </div>
       {!isImageLoaded && (
         <div className="flex w-full max-w-xl bg-neutral-500 text-white text-sm p-0.5 mt-10 rounded-full">
-          <input onChange={e=>setInput(e.target.value)} value={image}
+          <input onChange={e=>setInput(e.target.value)} value={input}
             type="text"
             placeholder="Describe your imagination"
             className="flex-1 bg-transparent outline-none ml-8 max-sm:w-20 placeholder-color"
